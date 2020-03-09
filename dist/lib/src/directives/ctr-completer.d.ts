@@ -1,6 +1,5 @@
 import { EventEmitter } from "@angular/core";
 import { CompleterItem } from "../components/completer-item";
-import * as i0 from "@angular/core";
 export interface CompleterList {
     search(term: string): void;
     open(): void;
@@ -45,6 +44,4 @@ export declare class CtrCompleter {
     get autoHighlightIndex(): number | null;
     set autoHighlightIndex(index: number | null);
     get hasSelected(): boolean;
-    static ɵfac: i0.ɵɵFactoryDef<CtrCompleter>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CtrCompleter, "[ctrCompleter]", never, {}, { "selected": "selected"; "highlighted": "highlighted"; "opened": "opened"; "dataSourceChange": "dataSourceChange"; }, never>;
 }

@@ -1,7 +1,6 @@
 import { AfterViewInit, ElementRef, OnDestroy, NgZone } from "@angular/core";
 import { CompleterItem } from "../components/completer-item";
 import { CtrCompleter, CompleterDropdown } from "./ctr-completer";
-import * as i0 from "@angular/core";
 export interface CtrRowElement {
     setHighlighted(selected: boolean): void;
     getNativeElement(): any;
@@ -37,6 +36,4 @@ export declare class CtrDropdown implements CompleterDropdown, OnDestroy, AfterV
     private dropdownRowTop;
     private dropdownHeight;
     private dropdownRowOffsetHeight;
-    static ɵfac: i0.ɵɵFactoryDef<CtrDropdown>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CtrDropdown, "[ctrDropdown]", never, {}, {}, never>;
 }

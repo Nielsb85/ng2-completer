@@ -2,7 +2,6 @@ import { ChangeDetectorRef, OnInit, TemplateRef, ViewContainerRef, NgZone } from
 import { CompleterItem } from "../components/completer-item";
 import { CompleterData } from "../services/completer-data";
 import { CompleterList, CtrCompleter } from "./ctr-completer";
-import * as i0 from "@angular/core";
 export declare class CtrListContext {
     results: CompleterItem[] | null;
     searching: boolean;
@@ -41,6 +40,4 @@ export declare class CtrList implements OnInit, CompleterList {
     private refreshTemplate;
     private getBestMatchIndex;
     private dataServiceSubscribe;
-    static ɵfac: i0.ɵɵFactoryDef<CtrList>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CtrList, "[ctrList]", never, { "ctrListMinSearchLength": "ctrListMinSearchLength"; "ctrListPause": "ctrListPause"; "ctrListAutoMatch": "ctrListAutoMatch"; "ctrListAutoHighlight": "ctrListAutoHighlight"; "ctrListDisplaySearching": "ctrListDisplaySearching"; "dataService": "ctrList"; "initialValue": "ctrListInitialValue"; }, {}, never>;
 }

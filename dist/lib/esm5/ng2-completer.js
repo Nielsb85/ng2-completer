@@ -2,13 +2,13 @@
  * @license ng2-completer
  * MIT license
  */
-import { __extends } from 'tslib';
-import { EventEmitter, ɵɵdefineInjectable, ɵɵinject, ɵɵdefineDirective, ɵɵdirectiveInject, ElementRef, NgZone, ɵɵlistener, TemplateRef, ViewContainerRef, ChangeDetectorRef, Renderer2, ɵɵdefineComponent, ɵɵelementStart, ɵɵtemplate, ɵɵelementEnd, ɵɵproperty, ɵɵpureFunction2, ɵɵadvance, ɵɵtext, ɵɵnextContext, ɵɵtextInterpolate, forwardRef, ɵɵviewQuery, ɵɵqueryRefresh, ɵɵloadQuery, ɵɵProvidersFeature, ɵɵattribute, ɵɵelement, ɵɵpureFunction1, ɵɵpropertyInterpolate, ɵɵsanitizeUrl, ɵɵdefineNgModule, ɵɵdefineInjector, ɵɵsetNgModuleScope } from '@angular/core';
+import { __extends, __decorate, __metadata, __param } from 'tslib';
+import { EventEmitter, Injectable, Output, Directive, HostListener, Host, ElementRef, NgZone, Input, TemplateRef, ViewContainerRef, ChangeDetectorRef, Renderer2, Component, forwardRef, ViewChild, NgModule } from '@angular/core';
 import { Subject, Observable, timer } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { NgModel, NG_VALUE_ACCESSOR, DefaultValueAccessor, NgControlStatus, MaxLengthValidator, FormControl, FormsModule } from '@angular/forms';
-import { NgClass, NgForOf, NgIf, CommonModule } from '@angular/common';
+import { NgModel, NG_VALUE_ACCESSOR, FormControl, FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 var MAX_CHARS = 524288; // the default max length per the html maxlength attribute
 var MIN_SEARCH_LENGTH = 3;
@@ -257,8 +257,9 @@ var LocalDataFactory = /** @class */ (function () {
     LocalDataFactory.prototype.create = function () {
         return new LocalData();
     };
-    LocalDataFactory.ɵfac = function LocalDataFactory_Factory(t) { return new (t || LocalDataFactory)(); };
-    LocalDataFactory.ɵprov = ɵɵdefineInjectable({ token: LocalDataFactory, factory: LocalDataFactory.ɵfac });
+    LocalDataFactory = __decorate([
+        Injectable()
+    ], LocalDataFactory);
     return LocalDataFactory;
 }());
 
@@ -269,8 +270,10 @@ var RemoteDataFactory = /** @class */ (function () {
     RemoteDataFactory.prototype.create = function () {
         return new RemoteData(this.http);
     };
-    RemoteDataFactory.ɵfac = function RemoteDataFactory_Factory(t) { return new (t || RemoteDataFactory)(ɵɵinject(HttpClient)); };
-    RemoteDataFactory.ɵprov = ɵɵdefineInjectable({ token: RemoteDataFactory, factory: RemoteDataFactory.ɵfac });
+    RemoteDataFactory = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [HttpClient])
+    ], RemoteDataFactory);
     return RemoteDataFactory;
 }());
 
@@ -299,8 +302,12 @@ var CompleterService = /** @class */ (function () {
             .searchFields(searchFields)
             .titleField(titleField);
     };
-    CompleterService.ɵfac = function CompleterService_Factory(t) { return new (t || CompleterService)(ɵɵinject(LocalDataFactory), ɵɵinject(RemoteDataFactory)); };
-    CompleterService.ɵprov = ɵɵdefineInjectable({ token: CompleterService, factory: CompleterService.ɵfac });
+    CompleterService = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [LocalDataFactory,
+            RemoteDataFactory // Using any instead of () => LocalData because of AoT errors
+        ])
+    ], CompleterService);
     return CompleterService;
 }());
 
@@ -428,8 +435,27 @@ var CtrCompleter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    CtrCompleter.ɵfac = function CtrCompleter_Factory(t) { return new (t || CtrCompleter)(); };
-    CtrCompleter.ɵdir = ɵɵdefineDirective({ type: CtrCompleter, selectors: [["", "ctrCompleter", ""]], outputs: { selected: "selected", highlighted: "highlighted", opened: "opened", dataSourceChange: "dataSourceChange" } });
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CtrCompleter.prototype, "selected", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CtrCompleter.prototype, "highlighted", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CtrCompleter.prototype, "opened", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CtrCompleter.prototype, "dataSourceChange", void 0);
+    CtrCompleter = __decorate([
+        Directive({
+            selector: "[ctrCompleter]",
+        })
+    ], CtrCompleter);
     return CtrCompleter;
 }());
 
@@ -582,10 +608,19 @@ var CtrDropdown = /** @class */ (function () {
         return row.parentElement.offsetHeight +
             parseInt(css.marginTop, 10) + parseInt(css.marginBottom, 10);
     };
-    CtrDropdown.ɵfac = function CtrDropdown_Factory(t) { return new (t || CtrDropdown)(ɵɵdirectiveInject(CtrCompleter, 1), ɵɵdirectiveInject(ElementRef), ɵɵdirectiveInject(NgZone)); };
-    CtrDropdown.ɵdir = ɵɵdefineDirective({ type: CtrDropdown, selectors: [["", "ctrDropdown", ""]], hostBindings: function CtrDropdown_HostBindings(rf, ctx) { if (rf & 1) {
-            ɵɵlistener("mousedown", function CtrDropdown_mousedown_HostBindingHandler($event) { return ctx.onMouseDown($event); });
-        } } });
+    __decorate([
+        HostListener("mousedown", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrDropdown.prototype, "onMouseDown", null);
+    CtrDropdown = __decorate([
+        Directive({
+            selector: "[ctrDropdown]",
+        }),
+        __param(0, Host()),
+        __metadata("design:paramtypes", [CtrCompleter, ElementRef, NgZone])
+    ], CtrDropdown);
     return CtrDropdown;
 }());
 
@@ -814,10 +849,85 @@ var CtrInput = /** @class */ (function () {
         }
         this.completer.clear();
     };
-    CtrInput.ɵfac = function CtrInput_Factory(t) { return new (t || CtrInput)(ɵɵdirectiveInject(CtrCompleter, 1), ɵɵdirectiveInject(NgModel), ɵɵdirectiveInject(ElementRef)); };
-    CtrInput.ɵdir = ɵɵdefineDirective({ type: CtrInput, selectors: [["", "ctrInput", ""]], hostBindings: function CtrInput_HostBindings(rf, ctx) { if (rf & 1) {
-            ɵɵlistener("keyup", function CtrInput_keyup_HostBindingHandler($event) { return ctx.keyupHandler($event); })("paste", function CtrInput_paste_HostBindingHandler($event) { return ctx.pasteHandler($event); })("keydown", function CtrInput_keydown_HostBindingHandler($event) { return ctx.keydownHandler($event); })("blur", function CtrInput_blur_HostBindingHandler($event) { return ctx.onBlur($event); })("focus", function CtrInput_focus_HostBindingHandler() { return ctx.onfocus(); })("click", function CtrInput_click_HostBindingHandler($event) { return ctx.onClick($event); });
-        } }, inputs: { clearSelected: "clearSelected", clearUnselected: "clearUnselected", overrideSuggested: "overrideSuggested", fillHighlighted: "fillHighlighted", openOnFocus: "openOnFocus", openOnClick: "openOnClick", selectOnClick: "selectOnClick", selectOnFocus: "selectOnFocus" }, outputs: { ngModelChange: "ngModelChange" } });
+    __decorate([
+        Input("clearSelected"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "clearSelected", void 0);
+    __decorate([
+        Input("clearUnselected"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "clearUnselected", void 0);
+    __decorate([
+        Input("overrideSuggested"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "overrideSuggested", void 0);
+    __decorate([
+        Input("fillHighlighted"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "fillHighlighted", void 0);
+    __decorate([
+        Input("openOnFocus"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "openOnFocus", void 0);
+    __decorate([
+        Input("openOnClick"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "openOnClick", void 0);
+    __decorate([
+        Input("selectOnClick"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "selectOnClick", void 0);
+    __decorate([
+        Input("selectOnFocus"),
+        __metadata("design:type", Object)
+    ], CtrInput.prototype, "selectOnFocus", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CtrInput.prototype, "ngModelChange", void 0);
+    __decorate([
+        HostListener("keyup", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "keyupHandler", null);
+    __decorate([
+        HostListener("paste", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "pasteHandler", null);
+    __decorate([
+        HostListener("keydown", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "keydownHandler", null);
+    __decorate([
+        HostListener("blur", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "onBlur", null);
+    __decorate([
+        HostListener("focus", []),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "onfocus", null);
+    __decorate([
+        HostListener("click", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrInput.prototype, "onClick", null);
+    CtrInput = __decorate([
+        Directive({
+            selector: "[ctrInput]",
+        }),
+        __param(0, Host()),
+        __metadata("design:paramtypes", [CtrCompleter, NgModel, ElementRef])
+    ], CtrInput);
     return CtrInput;
 }());
 
@@ -1018,8 +1128,47 @@ var CtrList = /** @class */ (function () {
             }
         }
     };
-    CtrList.ɵfac = function CtrList_Factory(t) { return new (t || CtrList)(ɵɵdirectiveInject(CtrCompleter, 1), ɵɵdirectiveInject(TemplateRef), ɵɵdirectiveInject(ViewContainerRef), ɵɵdirectiveInject(ChangeDetectorRef), ɵɵdirectiveInject(NgZone)); };
-    CtrList.ɵdir = ɵɵdefineDirective({ type: CtrList, selectors: [["", "ctrList", ""]], inputs: { ctrListMinSearchLength: "ctrListMinSearchLength", ctrListPause: "ctrListPause", ctrListAutoMatch: "ctrListAutoMatch", ctrListAutoHighlight: "ctrListAutoHighlight", ctrListDisplaySearching: "ctrListDisplaySearching", dataService: ["ctrList", "dataService"], initialValue: ["ctrListInitialValue", "initialValue"] } });
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CtrList.prototype, "ctrListMinSearchLength", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CtrList.prototype, "ctrListPause", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CtrList.prototype, "ctrListAutoMatch", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CtrList.prototype, "ctrListAutoHighlight", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CtrList.prototype, "ctrListDisplaySearching", void 0);
+    __decorate([
+        Input("ctrList"),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], CtrList.prototype, "dataService", null);
+    __decorate([
+        Input("ctrListInitialValue"),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], CtrList.prototype, "initialValue", null);
+    CtrList = __decorate([
+        Directive({
+            selector: "[ctrList]",
+        }),
+        __param(0, Host()),
+        __metadata("design:paramtypes", [CtrCompleter,
+            TemplateRef,
+            ViewContainerRef,
+            ChangeDetectorRef,
+            NgZone])
+    ], CtrList);
     return CtrList;
 }());
 
@@ -1076,25 +1225,44 @@ var CtrRow = /** @class */ (function () {
     CtrRow.prototype.getDataItem = function () {
         return this._item;
     };
-    CtrRow.ɵfac = function CtrRow_Factory(t) { return new (t || CtrRow)(ɵɵdirectiveInject(ElementRef), ɵɵdirectiveInject(Renderer2), ɵɵdirectiveInject(CtrDropdown, 1)); };
-    CtrRow.ɵdir = ɵɵdefineDirective({ type: CtrRow, selectors: [["", "ctrRow", ""]], hostBindings: function CtrRow_HostBindings(rf, ctx) { if (rf & 1) {
-            ɵɵlistener("click", function CtrRow_click_HostBindingHandler($event) { return ctx.onClick($event); })("mouseenter", function CtrRow_mouseenter_HostBindingHandler($event) { return ctx.onMouseEnter($event); })("mousedown", function CtrRow_mousedown_HostBindingHandler($event) { return ctx.onMouseDown($event); });
-        } }, inputs: { ctrRow: "ctrRow", dataItem: "dataItem" } });
+    __decorate([
+        Input(),
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], CtrRow.prototype, "ctrRow", null);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], CtrRow.prototype, "dataItem", null);
+    __decorate([
+        HostListener("click", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrRow.prototype, "onClick", null);
+    __decorate([
+        HostListener("mouseenter", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrRow.prototype, "onMouseEnter", null);
+    __decorate([
+        HostListener("mousedown", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], CtrRow.prototype, "onMouseDown", null);
+    CtrRow = __decorate([
+        Directive({
+            selector: "[ctrRow]",
+        }),
+        __param(2, Host()),
+        __metadata("design:paramtypes", [ElementRef, Renderer2, CtrDropdown])
+    ], CtrRow);
     return CtrRow;
 }());
 
-function CompleterListItemCmp_span_1_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "span", 2);
-    ɵɵtext(1);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var part_r1 = ctx.$implicit;
-    var ctx_r0 = ɵɵnextContext();
-    ɵɵproperty("ngClass", part_r1.isMatch ? ctx_r0.matchClass : null);
-    ɵɵadvance(1);
-    ɵɵtextInterpolate(part_r1.text);
-} }
-var _c0 = function (a0, a1) { return { "completer-title": a0, "completer-description": a1 }; };
 var CompleterListItemCmp = /** @class */ (function () {
     function CompleterListItemCmp() {
         this.text = "";
@@ -1129,123 +1297,31 @@ var CompleterListItemCmp = /** @class */ (function () {
             this.parts.push({ isMatch: false, text: this.text.slice(startIndex, this.text.length) });
         }
     };
-    CompleterListItemCmp.ɵfac = function CompleterListItemCmp_Factory(t) { return new (t || CompleterListItemCmp)(); };
-    CompleterListItemCmp.ɵcmp = ɵɵdefineComponent({ type: CompleterListItemCmp, selectors: [["completer-list-item"]], inputs: { text: "text", searchStr: "searchStr", matchClass: "matchClass", type: "type" }, decls: 2, vars: 5, consts: [[1, "completer-list-item-holder", 3, "ngClass"], ["class", "completer-list-item", 3, "ngClass", 4, "ngFor", "ngForOf"], [1, "completer-list-item", 3, "ngClass"]], template: function CompleterListItemCmp_Template(rf, ctx) { if (rf & 1) {
-            ɵɵelementStart(0, "span", 0);
-            ɵɵtemplate(1, CompleterListItemCmp_span_1_Template, 2, 2, "span", 1);
-            ɵɵelementEnd();
-        } if (rf & 2) {
-            ɵɵproperty("ngClass", ɵɵpureFunction2(2, _c0, ctx.type === "title", ctx.type === "description"));
-            ɵɵadvance(1);
-            ɵɵproperty("ngForOf", ctx.parts);
-        } }, directives: [NgClass, NgForOf], encapsulation: 2 });
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CompleterListItemCmp.prototype, "text", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CompleterListItemCmp.prototype, "searchStr", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CompleterListItemCmp.prototype, "matchClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CompleterListItemCmp.prototype, "type", void 0);
+    CompleterListItemCmp = __decorate([
+        Component({
+            selector: "completer-list-item",
+            template: "<span class=\"completer-list-item-holder\" [ngClass]= \"{'completer-title': type === 'title', 'completer-description': type === 'description'}\" >\n        <span class=\"completer-list-item\" *ngFor=\"let part of parts\" [ngClass]= \"part.isMatch ? matchClass : null\">{{part.text}}</span>\n    </span>"
+        })
+    ], CompleterListItemCmp);
     return CompleterListItemCmp;
 }());
 
-var _c0$1 = ["ctrInput"];
-function CompleterCmp_div_3_div_1_div_1_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 10);
-    ɵɵtext(1);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var ctx_r9 = ɵɵnextContext(3);
-    ɵɵadvance(1);
-    ɵɵtextInterpolate(ctx_r9._textSearching);
-} }
-function CompleterCmp_div_3_div_1_div_2_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 11);
-    ɵɵtext(1);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var ctx_r10 = ɵɵnextContext(3);
-    ɵɵadvance(1);
-    ɵɵtextInterpolate(ctx_r10._textNoResults);
-} }
-function CompleterCmp_div_3_div_1_div_3_div_2_img_1_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelement(0, "img", 21);
-} if (rf & 2) {
-    var item_r12 = ɵɵnextContext(2).$implicit;
-    ɵɵpropertyInterpolate("src", item_r12.image, ɵɵsanitizeUrl);
-} }
-function CompleterCmp_div_3_div_1_div_3_div_2_div_2_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelement(0, "div", 22);
-} }
-function CompleterCmp_div_3_div_1_div_3_div_2_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 18);
-    ɵɵtemplate(1, CompleterCmp_div_3_div_1_div_3_div_2_img_1_Template, 1, 1, "img", 19);
-    ɵɵtemplate(2, CompleterCmp_div_3_div_1_div_3_div_2_div_2_Template, 1, 0, "div", 20);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var item_r12 = ɵɵnextContext().$implicit;
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", item_r12.image != "");
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", item_r12.image === "");
-} }
-function CompleterCmp_div_3_div_1_div_3_completer_list_item_5_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelement(0, "completer-list-item", 23);
-} if (rf & 2) {
-    var item_r12 = ɵɵnextContext().$implicit;
-    var ctx_r15 = ɵɵnextContext(3);
-    ɵɵproperty("text", item_r12.description)("matchClass", ctx_r15.matchClass)("searchStr", ctx_r15.searchStr)("type", "description");
-} }
-var _c1 = function (a0) { return { "completer-item-text-image": a0 }; };
-function CompleterCmp_div_3_div_1_div_3_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 12);
-    ɵɵelementStart(1, "div", 13);
-    ɵɵtemplate(2, CompleterCmp_div_3_div_1_div_3_div_2_Template, 3, 2, "div", 14);
-    ɵɵelementStart(3, "div", 15);
-    ɵɵelement(4, "completer-list-item", 16);
-    ɵɵtemplate(5, CompleterCmp_div_3_div_1_div_3_completer_list_item_5_Template, 1, 4, "completer-list-item", 17);
-    ɵɵelementEnd();
-    ɵɵelementEnd();
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var item_r12 = ctx.$implicit;
-    var rowIndex_r13 = ctx.index;
-    var ctx_r11 = ɵɵnextContext(3);
-    ɵɵadvance(1);
-    ɵɵproperty("ctrRow", rowIndex_r13)("dataItem", item_r12);
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", item_r12.image || item_r12.image === "");
-    ɵɵadvance(1);
-    ɵɵproperty("ngClass", ɵɵpureFunction1(9, _c1, item_r12.image || item_r12.image === ""));
-    ɵɵadvance(1);
-    ɵɵproperty("text", item_r12.title)("matchClass", ctx_r11.matchClass)("searchStr", ctx_r11.searchStr)("type", "title");
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", item_r12.description && item_r12.description != "");
-} }
-function CompleterCmp_div_3_div_1_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 6);
-    ɵɵtemplate(1, CompleterCmp_div_3_div_1_div_1_Template, 2, 1, "div", 7);
-    ɵɵtemplate(2, CompleterCmp_div_3_div_1_div_2_Template, 2, 1, "div", 8);
-    ɵɵtemplate(3, CompleterCmp_div_3_div_1_div_3_Template, 6, 11, "div", 9);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var ctx_r21 = ɵɵnextContext();
-    var searchActive_r5 = ctx_r21.searching;
-    var items_r4 = ctx_r21.results;
-    var ctx_r8 = ɵɵnextContext();
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", searchActive_r5 && ctx_r8.displaySearching);
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", !searchActive_r5 && (!items_r4 || (items_r4 == null ? null : items_r4.length) === 0));
-    ɵɵadvance(1);
-    ɵɵproperty("ngForOf", items_r4);
-} }
-function CompleterCmp_div_3_Template(rf, ctx) { if (rf & 1) {
-    ɵɵelementStart(0, "div", 4);
-    ɵɵtemplate(1, CompleterCmp_div_3_div_1_Template, 4, 3, "div", 5);
-    ɵɵelementEnd();
-} if (rf & 2) {
-    var items_r4 = ctx.results;
-    var searchActive_r5 = ctx.searching;
-    var isInitialized_r6 = ctx.searchInitialized;
-    var isOpen_r7 = ctx.isOpen;
-    var ctx_r3 = ɵɵnextContext();
-    ɵɵadvance(1);
-    ɵɵproperty("ngIf", isInitialized_r6 && isOpen_r7 && ((items_r4 == null ? null : items_r4.length) > 0 || ctx_r3.displayNoResults && !searchActive_r5 || searchActive_r5 && ctx_r3.displaySearching));
-} }
 var noop = function () {
     return;
 };
@@ -1461,28 +1537,162 @@ var CompleterCmp = /** @class */ (function () {
     CompleterCmp.prototype.isOpen = function () {
         return this._open;
     };
-    CompleterCmp.ɵfac = function CompleterCmp_Factory(t) { return new (t || CompleterCmp)(ɵɵdirectiveInject(CompleterService), ɵɵdirectiveInject(ChangeDetectorRef)); };
-    CompleterCmp.ɵcmp = ɵɵdefineComponent({ type: CompleterCmp, selectors: [["ng2-completer"]], viewQuery: function CompleterCmp_Query(rf, ctx) { if (rf & 1) {
-            ɵɵviewQuery(CtrCompleter, true);
-            ɵɵviewQuery(_c0$1, true);
-        } if (rf & 2) {
-            var _t;
-            ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.completer = _t.first);
-            ɵɵqueryRefresh(_t = ɵɵloadQuery()) && (ctx.ctrInput = _t.first);
-        } }, inputs: { dataService: "dataService", inputName: "inputName", inputId: "inputId", pause: "pause", minSearchLength: "minSearchLength", maxChars: "maxChars", overrideSuggested: "overrideSuggested", clearSelected: "clearSelected", clearUnselected: "clearUnselected", fillHighlighted: "fillHighlighted", placeholder: "placeholder", matchClass: "matchClass", fieldTabindex: "fieldTabindex", autoMatch: "autoMatch", disableInput: "disableInput", inputClass: "inputClass", autofocus: "autofocus", openOnFocus: "openOnFocus", openOnClick: "openOnClick", selectOnClick: "selectOnClick", selectOnFocus: "selectOnFocus", initialValue: "initialValue", autoHighlight: "autoHighlight", datasource: "datasource", textNoResults: "textNoResults", textSearching: "textSearching" }, outputs: { selected: "selected", highlighted: "highlighted", blurEvent: "blur", click: "click", focusEvent: "focus", opened: "opened", keyup: "keyup", keydown: "keydown" }, features: [ɵɵProvidersFeature([COMPLETER_CONTROL_VALUE_ACCESSOR])], decls: 4, vars: 23, consts: [["ctrCompleter", "", 1, "completer-holder"], ["type", "search", "ctrInput", "", "autocomplete", "off", "autocorrect", "off", "autocapitalize", "off", 1, "completer-input", 3, "ngClass", "ngModel", "placeholder", "tabindex", "disabled", "clearSelected", "clearUnselected", "overrideSuggested", "openOnFocus", "fillHighlighted", "openOnClick", "selectOnClick", "selectOnFocus", "ngModelChange", "blur", "focus", "keyup", "keydown", "click"], ["ctrInput", ""], ["class", "completer-dropdown-holder", 4, "ctrList", "ctrListMinSearchLength", "ctrListPause", "ctrListAutoMatch", "ctrListInitialValue", "ctrListAutoHighlight", "ctrListDisplaySearching"], [1, "completer-dropdown-holder"], ["class", "completer-dropdown", "ctrDropdown", "", 4, "ngIf"], ["ctrDropdown", "", 1, "completer-dropdown"], ["class", "completer-searching", 4, "ngIf"], ["class", "completer-no-results", 4, "ngIf"], ["class", "completer-row-wrapper", 4, "ngFor", "ngForOf"], [1, "completer-searching"], [1, "completer-no-results"], [1, "completer-row-wrapper"], [1, "completer-row", 3, "ctrRow", "dataItem"], ["class", "completer-image-holder", 4, "ngIf"], [1, "completer-item-text", 3, "ngClass"], [1, "completer-title", 3, "text", "matchClass", "searchStr", "type"], ["class", "completer-description", 3, "text", "matchClass", "searchStr", "type", 4, "ngIf"], [1, "completer-image-holder"], ["class", "completer-image", 3, "src", 4, "ngIf"], ["class", "completer-image-default", 4, "ngIf"], [1, "completer-image", 3, "src"], [1, "completer-image-default"], [1, "completer-description", 3, "text", "matchClass", "searchStr", "type"]], template: function CompleterCmp_Template(rf, ctx) { if (rf & 1) {
-            ɵɵelementStart(0, "div", 0);
-            ɵɵelementStart(1, "input", 1, 2);
-            ɵɵlistener("ngModelChange", function CompleterCmp_Template_input_ngModelChange_1_listener($event) { return ctx.searchStr = $event; })("ngModelChange", function CompleterCmp_Template_input_ngModelChange_1_listener($event) { return ctx.onChange($event); })("blur", function CompleterCmp_Template_input_blur_1_listener() { return ctx.onBlur(); })("focus", function CompleterCmp_Template_input_focus_1_listener() { return ctx.onFocus(); })("keyup", function CompleterCmp_Template_input_keyup_1_listener($event) { return ctx.onKeyup($event); })("keydown", function CompleterCmp_Template_input_keydown_1_listener($event) { return ctx.onKeydown($event); })("click", function CompleterCmp_Template_input_click_1_listener($event) { return ctx.onClick($event); });
-            ɵɵelementEnd();
-            ɵɵtemplate(3, CompleterCmp_div_3_Template, 2, 1, "div", 3);
-            ɵɵelementEnd();
-        } if (rf & 2) {
-            ɵɵadvance(1);
-            ɵɵproperty("ngClass", ctx.inputClass)("ngModel", ctx.searchStr)("placeholder", ctx.placeholder)("tabindex", ctx.fieldTabindex)("disabled", ctx.disableInput)("clearSelected", ctx.clearSelected)("clearUnselected", ctx.clearUnselected)("overrideSuggested", ctx.overrideSuggested)("openOnFocus", ctx.openOnFocus)("fillHighlighted", ctx.fillHighlighted)("openOnClick", ctx.openOnClick)("selectOnClick", ctx.selectOnClick)("selectOnFocus", ctx.selectOnFocus);
-            ɵɵattribute("id", ctx.inputId.length > 0 ? ctx.inputId : null)("name", ctx.inputName)("maxlength", ctx.maxChars);
-            ɵɵadvance(2);
-            ɵɵproperty("ctrList", ctx.dataService)("ctrListMinSearchLength", ctx.minSearchLength)("ctrListPause", ctx.pause)("ctrListAutoMatch", ctx.autoMatch)("ctrListInitialValue", ctx.initialValue)("ctrListAutoHighlight", ctx.autoHighlight)("ctrListDisplaySearching", ctx.displaySearching);
-        } }, directives: [CtrCompleter, DefaultValueAccessor, CtrInput, NgClass, NgControlStatus, NgModel, MaxLengthValidator, CtrList, NgIf, CtrDropdown, NgForOf, CtrRow, CompleterListItemCmp], styles: [".completer-dropdown[_ngcontent-%COMP%] {\n        border-color: #ececec;\n        border-width: 1px;\n        border-style: solid;\n        border-radius: 2px;\n        width: 250px;\n        padding: 6px;\n        cursor: pointer;\n        z-index: 9999;\n        position: absolute;\n        margin-top: -6px;\n        background-color: #ffffff;\n    }\n\n    .completer-row[_ngcontent-%COMP%] {\n        padding: 5px;\n        color: #000000;\n        margin-bottom: 4px;\n        clear: both;\n        display: inline-block;\n        width: 103%;\n    }\n\n    .completer-selected-row[_ngcontent-%COMP%] {\n        background-color: lightblue;\n        color: #ffffff;\n    }\n\n    .completer-description[_ngcontent-%COMP%] {\n        font-size: 14px;\n    }\n\n    .completer-image-default[_ngcontent-%COMP%] {\n        width: 16px;\n        height: 16px;\n        background-image: url(\"demo/res/img/default.png\");\n    }\n\n    .completer-image-holder[_ngcontent-%COMP%] {\n        float: left;\n        width: 10%;\n    }\n    .completer-item-text-image[_ngcontent-%COMP%] {\n        float: right;\n        width: 90%;\n    }"] });
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "dataService", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "inputName", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CompleterCmp.prototype, "inputId", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "pause", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "minSearchLength", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "maxChars", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "overrideSuggested", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "clearSelected", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "clearUnselected", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "fillHighlighted", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "placeholder", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "matchClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "fieldTabindex", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "autoMatch", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "disableInput", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "inputClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "autofocus", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "openOnFocus", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "openOnClick", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "selectOnClick", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "selectOnFocus", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "initialValue", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "autoHighlight", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "selected", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "highlighted", void 0);
+    __decorate([
+        Output("blur"),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "blurEvent", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "click", void 0);
+    __decorate([
+        Output("focus"),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "focusEvent", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "opened", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CompleterCmp.prototype, "keyup", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CompleterCmp.prototype, "keydown", void 0);
+    __decorate([
+        ViewChild(CtrCompleter, { static: false }),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "completer", void 0);
+    __decorate([
+        ViewChild("ctrInput", { static: false }),
+        __metadata("design:type", Object)
+    ], CompleterCmp.prototype, "ctrInput", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], CompleterCmp.prototype, "datasource", null);
+    __decorate([
+        Input(),
+        __metadata("design:type", String),
+        __metadata("design:paramtypes", [String])
+    ], CompleterCmp.prototype, "textNoResults", null);
+    __decorate([
+        Input(),
+        __metadata("design:type", String),
+        __metadata("design:paramtypes", [String])
+    ], CompleterCmp.prototype, "textSearching", null);
+    CompleterCmp = __decorate([
+        Component({
+            selector: "ng2-completer",
+            template: "\n        <div class=\"completer-holder\" ctrCompleter>\n            <input #ctrInput [attr.id]=\"inputId.length > 0 ? inputId : null\" type=\"search\"\n                class=\"completer-input\" ctrInput [ngClass]=\"inputClass\"\n                [(ngModel)]=\"searchStr\" (ngModelChange)=\"onChange($event)\"\n                [attr.name]=\"inputName\" [placeholder]=\"placeholder\"\n                [attr.maxlength]=\"maxChars\" [tabindex]=\"fieldTabindex\" [disabled]=\"disableInput\"\n                [clearSelected]=\"clearSelected\" [clearUnselected]=\"clearUnselected\"\n                [overrideSuggested]=\"overrideSuggested\" [openOnFocus]=\"openOnFocus\" [fillHighlighted]=\"fillHighlighted\"\n                [openOnClick]=\"openOnClick\" [selectOnClick]=\"selectOnClick\" [selectOnFocus]=\"selectOnFocus\"\n                (blur)=\"onBlur()\" (focus)=\"onFocus()\" (keyup)=\"onKeyup($event)\"\n                (keydown)=\"onKeydown($event)\" (click)=\"onClick($event)\"\n                autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"off\" />\n\n            <div class=\"completer-dropdown-holder\"\n                *ctrList=\"dataService;\n                    minSearchLength: minSearchLength;\n                    pause: pause;\n                    autoMatch: autoMatch;\n                    initialValue: initialValue;\n                    autoHighlight: autoHighlight;\n                    displaySearching: displaySearching;\n                    let items = results;\n                    let searchActive = searching;\n                    let isInitialized = searchInitialized;\n                    let isOpen = isOpen;\">\n                <div class=\"completer-dropdown\" ctrDropdown\n                    *ngIf=\"isInitialized && isOpen && (( items?.length > 0|| (displayNoResults && !searchActive)) || (searchActive && displaySearching))\">\n                    <div *ngIf=\"searchActive && displaySearching\" class=\"completer-searching\">{{ _textSearching }}</div>\n                    <div *ngIf=\"!searchActive && (!items || items?.length === 0)\"\n                    class=\"completer-no-results\">{{ _textNoResults }}</div>\n                    <div class=\"completer-row-wrapper\" *ngFor=\"let item of items; let rowIndex=index\">\n                        <div class=\"completer-row\" [ctrRow]=\"rowIndex\" [dataItem]=\"item\">\n                            <div *ngIf=\"item.image || item.image === ''\" class=\"completer-image-holder\">\n                                <img *ngIf=\"item.image != ''\" src=\"{{item.image}}\" class=\"completer-image\" />\n                                <div *ngIf=\"item.image === ''\" class=\"completer-image-default\"></div>\n                            </div>\n                            <div class=\"completer-item-text\"\n                            [ngClass]=\"{'completer-item-text-image': item.image || item.image === '' }\">\n                                <completer-list-item\n                                class=\"completer-title\" [text]=\"item.title\" [matchClass]=\"matchClass\"\n                                [searchStr]=\"searchStr\" [type]=\"'title'\"></completer-list-item>\n                                <completer-list-item *ngIf=\"item.description && item.description != ''\"\n                                class=\"completer-description\" [text]=\"item.description\"\n                                    [matchClass]=\"matchClass\" [searchStr]=\"searchStr\" [type]=\"'description'\">\n                                </completer-list-item>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    ",
+            styles: ["\n    .completer-dropdown {\n        border-color: #ececec;\n        border-width: 1px;\n        border-style: solid;\n        border-radius: 2px;\n        width: 250px;\n        padding: 6px;\n        cursor: pointer;\n        z-index: 9999;\n        position: absolute;\n        margin-top: -6px;\n        background-color: #ffffff;\n    }\n\n    .completer-row {\n        padding: 5px;\n        color: #000000;\n        margin-bottom: 4px;\n        clear: both;\n        display: inline-block;\n        width: 103%;\n    }\n\n    .completer-selected-row {\n        background-color: lightblue;\n        color: #ffffff;\n    }\n\n    .completer-description {\n        font-size: 14px;\n    }\n\n    .completer-image-default {\n        width: 16px;\n        height: 16px;\n        background-image: url(\"demo/res/img/default.png\");\n    }\n\n    .completer-image-holder {\n        float: left;\n        width: 10%;\n    }\n    .completer-item-text-image {\n        float: right;\n        width: 90%;\n    }\n    "],
+            providers: [COMPLETER_CONTROL_VALUE_ACCESSOR]
+        }),
+        __metadata("design:paramtypes", [CompleterService, ChangeDetectorRef])
+    ], CompleterCmp);
     return CompleterCmp;
 }());
 
@@ -1494,39 +1704,49 @@ var providers = [
 var Ng2CompleterModule = /** @class */ (function () {
     function Ng2CompleterModule() {
     }
+    Ng2CompleterModule_1 = Ng2CompleterModule;
     Ng2CompleterModule.forRoot = function () {
         return {
-            ngModule: Ng2CompleterModule,
+            ngModule: Ng2CompleterModule_1,
             providers: providers
         };
     };
     Ng2CompleterModule.forChild = function () {
         return {
-            ngModule: Ng2CompleterModule,
+            ngModule: Ng2CompleterModule_1,
             providers: providers
         };
     };
-    Ng2CompleterModule.ɵmod = ɵɵdefineNgModule({ type: Ng2CompleterModule });
-    Ng2CompleterModule.ɵinj = ɵɵdefineInjector({ factory: function Ng2CompleterModule_Factory(t) { return new (t || Ng2CompleterModule)(); }, providers: providers, imports: [[
+    var Ng2CompleterModule_1;
+    Ng2CompleterModule = Ng2CompleterModule_1 = __decorate([
+        NgModule({
+            declarations: [
+                CompleterListItemCmp,
+                CtrCompleter,
+                CtrDropdown,
+                CtrInput,
+                CtrList,
+                CtrRow,
+                CompleterCmp
+            ],
+            exports: [
+                CompleterListItemCmp,
+                CtrCompleter,
+                CtrDropdown,
+                CtrInput,
+                CtrList,
+                CtrRow,
+                CompleterCmp
+            ],
+            imports: [
                 CommonModule,
                 FormsModule
-            ]] });
+            ],
+            providers: providers
+        })
+    ], Ng2CompleterModule);
     return Ng2CompleterModule;
 }());
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && ɵɵsetNgModuleScope(Ng2CompleterModule, { declarations: [CompleterListItemCmp,
-        CtrCompleter,
-        CtrDropdown,
-        CtrInput,
-        CtrList,
-        CtrRow,
-        CompleterCmp], imports: [CommonModule,
-        FormsModule], exports: [CompleterListItemCmp,
-        CtrCompleter,
-        CtrDropdown,
-        CtrInput,
-        CtrList,
-        CtrRow,
-        CompleterCmp] }); })();
 
-export { CompleterCmp, CompleterListItemCmp, CompleterService, CtrCompleter, CtrDropdown, CtrInput, CtrList, CtrRow, LocalData, LocalDataFactory, Ng2CompleterModule, RemoteData, RemoteDataFactory };
+export { CompleterCmp, CompleterListItemCmp, CompleterService, CtrCompleter, CtrDropdown, CtrInput, CtrList, CtrRow, LocalData, LocalDataFactory, Ng2CompleterModule, RemoteData, RemoteDataFactory, CtrListContext as ɵa, CompleterBaseData as ɵb };
 //# sourceMappingURL=ng2-completer.js.map

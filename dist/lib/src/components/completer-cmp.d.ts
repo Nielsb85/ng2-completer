@@ -4,7 +4,6 @@ import { CtrCompleter } from "../directives/ctr-completer";
 import { CompleterData } from "../services/completer-data";
 import { CompleterService } from "../services/completer-service";
 import { CompleterItem } from "./completer-item";
-import * as i0 from "@angular/core";
 export declare class CompleterCmp implements OnInit, ControlValueAccessor, AfterViewChecked, AfterViewInit {
     private completerService;
     private cdr;
@@ -78,6 +77,4 @@ export declare class CompleterCmp implements OnInit, ControlValueAccessor, After
     focus(): void;
     blur(): void;
     isOpen(): boolean;
-    static ɵfac: i0.ɵɵFactoryDef<CompleterCmp>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CompleterCmp, "ng2-completer", never, { "dataService": "dataService"; "inputName": "inputName"; "inputId": "inputId"; "pause": "pause"; "minSearchLength": "minSearchLength"; "maxChars": "maxChars"; "overrideSuggested": "overrideSuggested"; "clearSelected": "clearSelected"; "clearUnselected": "clearUnselected"; "fillHighlighted": "fillHighlighted"; "placeholder": "placeholder"; "matchClass": "matchClass"; "fieldTabindex": "fieldTabindex"; "autoMatch": "autoMatch"; "disableInput": "disableInput"; "inputClass": "inputClass"; "autofocus": "autofocus"; "openOnFocus": "openOnFocus"; "openOnClick": "openOnClick"; "selectOnClick": "selectOnClick"; "selectOnFocus": "selectOnFocus"; "initialValue": "initialValue"; "autoHighlight": "autoHighlight"; "datasource": "datasource"; "textNoResults": "textNoResults"; "textSearching": "textSearching"; }, { "selected": "selected"; "highlighted": "highlighted"; "blurEvent": "blur"; "click": "click"; "focusEvent": "focus"; "opened": "opened"; "keyup": "keyup"; "keydown": "keydown"; }, never>;
 }

@@ -1,7 +1,6 @@
 import { ElementRef, EventEmitter } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import { CtrCompleter } from "./ctr-completer";
-import * as i0 from "@angular/core";
 export declare class CtrInput {
     private completer;
     private ngModel;
@@ -30,6 +29,4 @@ export declare class CtrInput {
     private handleSelection;
     private restoreSearchValue;
     private doBlur;
-    static ɵfac: i0.ɵɵFactoryDef<CtrInput>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CtrInput, "[ctrInput]", never, { "clearSelected": "clearSelected"; "clearUnselected": "clearUnselected"; "overrideSuggested": "overrideSuggested"; "fillHighlighted": "fillHighlighted"; "openOnFocus": "openOnFocus"; "openOnClick": "openOnClick"; "selectOnClick": "selectOnClick"; "selectOnFocus": "selectOnFocus"; }, { "ngModelChange": "ngModelChange"; }, never>;
 }

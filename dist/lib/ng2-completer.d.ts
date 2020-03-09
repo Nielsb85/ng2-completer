@@ -1,5 +1,6 @@
 /**
  * Generated bundle index. Do not edit.
  */
-/// <amd-module name="ng2-completer" />
 export * from './public_api';
+export { CtrListContext as ɵa } from './src/directives/ctr-list';
+export { CompleterBaseData as ɵb } from './src/services/completer-base-data';
